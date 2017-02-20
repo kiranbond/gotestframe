@@ -1,0 +1,15 @@
+{
+  "name": "dummy_test",
+  "description" : "",
+  "dir": "{{.TEST_JSON_OUTPUT_DIR}}",
+  "control_files": [
+    "control_dummy.json"
+  ],
+  "ops_files": [
+    {{range $name, $temp := MakeArray `i-12345` `j-12345` `k-67890`}}
+      {{SetControlVar "NAME" $temp}},
+      "ops_framework_test.json",
+    {{end}}
+    "ops_no_op.json"
+  ]
+}

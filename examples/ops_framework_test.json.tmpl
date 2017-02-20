@@ -1,0 +1,14 @@
+{
+  "name" : "async_noop",
+  "description" : "Ops to call NoOp in async manner",
+  "ops" : [
+    {{$name := GetControlVar "NAME"}}
+    {
+      "system_op" : {},
+      "method" : "NoOp",
+      "params" : [
+      "{{.NAME}}"
+      ]
+    }
+  ]
+}

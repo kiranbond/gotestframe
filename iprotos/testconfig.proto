@@ -1,0 +1,108 @@
+// Copyright 2015 ZeroStack, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package iprotos;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+option (gogoproto.goproto_stringer_all)    = true;
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.unmarshaler_all)         = true;
+option (gogoproto.marshaler_all)           = true;
+option (gogoproto.sizer_all)               = true;
+option (gogoproto.equal_all)               = true;
+
+option java_package = "com.zerostack.protofiles.iprotos";
+
+message TestSymbol {
+  optional int32        Index  = 1 [(gogoproto.jsontag) = "index"];
+  optional string       Id     = 2 [(gogoproto.jsontag) = "id"];
+  optional string       Path   = 3 [(gogoproto.jsontag) = "path"];
+}
+
+message HTTPHeader {
+  optional string Key   = 1 [(gogoproto.jsontag) = "key"];
+  optional string Value = 2 [(gogoproto.jsontag) = "value"];
+}
+
+message HeaderSymbol {
+  optional string       Key   = 1 [(gogoproto.jsontag) = "key"];
+  optional string       Id    = 2 [(gogoproto.jsontag) = "id"];
+}
+
+message HTTPOp {
+  optional string       Method        = 1 [(gogoproto.jsontag) = "method"];
+  repeated HTTPHeader   ReqHeader     = 2 [(gogoproto.jsontag) = "req_header"];
+  repeated HeaderSymbol ReqSymbol     = 3 [(gogoproto.jsontag) = "req_symbol"];
+  optional string       EndPoint      = 4 [(gogoproto.jsontag) = "end_point"];
+  optional uint32       StatusCode    = 5 [(gogoproto.jsontag) = "status_code"];
+  repeated HTTPHeader   RspHeader     = 6 [(gogoproto.jsontag) = "rsp_header"];
+  repeated HeaderSymbol RspSymbol     = 7 [(gogoproto.jsontag) = "rsp_symbol"];
+  optional string       Timeout       = 8 [(gogoproto.jsontag) = "timeout"];
+}
+
+message TestOp {
+  enum OpType {
+    option allow_alias = true;
+    TESTOP_NONE    = 0;
+    TESTOP_HTTP    = 1;
+    TESTOP_LAST    = 2; // Alias.
+  }
+  optional string      Method             = 1 [(gogoproto.jsontag) = "method"];
+  optional bool        Async              = 2 [(gogoproto.jsontag) = "async"];
+  // filled in by the framework
+  optional uint32      OpID               = 3 [(gogoproto.jsontag) = "op_id"];
+  // This is a special customtype for passing generic marshaled json data to methods.
+  repeated bytes       Params             = 4 [(gogoproto.customtype) = "zerostack/common/customtypes.RawMessage", (gogoproto.jsontag) = "params,omitempty"];
+  repeated TestResult  Results            = 5 [(gogoproto.jsontag) = "results,omitempty"];
+  repeated TestSymbol  InputSymbols       = 6 [(gogoproto.jsontag) = "input_symbols,omitempty"];
+  repeated TestSymbol  OutputSymbols      = 7 [(gogoproto.jsontag) = "output_symbols,omitempty"];
+  required OpType      Type               = 8 [(gogoproto.jsontag) = "type"];
+  optional HTTPOp      HTTPOp             = 14 [(gogoproto.jsontag) = "http_op"];
+}
+
+message TestResult {
+  optional uint32 Index = 1 [(gogoproto.jsontag) = "index"];
+  optional string Path  = 2 [(gogoproto.jsontag) = "path,omitempty"];
+  optional bytes  Value = 3 [(gogoproto.customtype) = "zerostack/common/customtypes.RawMessage", (gogoproto.jsontag) = "value,omitempty"];
+}
+
+message TestOps {
+  optional string Name        = 1 [(gogoproto.jsontag) = "name"];
+  optional string Description = 2 [(gogoproto.jsontag) = "description"];
+  repeated TestOp Ops         = 3 [(gogoproto.jsontag) = "ops"];
+}
+
+message RawMessage {
+  repeated bytes Message = 1 [(gogoproto.customtype) = "zerostack/common/customtypes.RawMessage", (gogoproto.jsontag) = "params,omitempty"];
+}
+
+// TestConfigFiles is a list of files that constitutes a test with the ordering
+// according to the order in the slice.
+message SingleTest {
+  optional string Name            = 1 [(gogoproto.jsontag) = "name"];
+  optional string Description     = 2 [(gogoproto.jsontag) = "description"];
+  optional string Dir             = 3 [(gogoproto.jsontag) = "dir"];
+  repeated string ControlFiles    = 4 [(gogoproto.jsontag) = "control_files"];
+  optional bool   StopOnFail      = 5 [(gogoproto.jsontag) = "stop_on_fail"];
+  repeated string OpsFiles        = 6 [(gogoproto.jsontag) = "ops_files"];
+}
+
+message TestList {
+  optional string Name        = 1 [(gogoproto.jsontag) = "name"];
+  optional string Description = 2 [(gogoproto.jsontag) = "description"];
+  optional string Dir         = 3 [(gogoproto.jsontag) = "dir"];
+  repeated string ControlFiles= 4 [(gogoproto.jsontag) = "control_files"];
+  repeated string TestList    = 5 [(gogoproto.jsontag) = "test_list"];
+}
+
